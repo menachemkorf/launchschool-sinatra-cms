@@ -50,7 +50,7 @@ get "/:filename" do
   if File.exist?(file_path)
     load_file_content(file_path)
   else
-    session[:error] = "#{File.basename(file_path)} does not exist."
+    session[:message] = "#{File.basename(file_path)} does not exist."
     redirect "/"
   end
 end
@@ -63,7 +63,7 @@ get "/:filename/edit" do
     @content = File.read(file_path)
     erb :edit
   else
-    session[:error] = "#{File.basename(file_path)} does not exist."
+    session[:message] = "#{File.basename(file_path)} does not exist."
     redirect "/"
   end
 end
@@ -73,6 +73,6 @@ post "/:filename" do
 
   File.write(file_path, params[:content])
 
-  session[:success] = "#{params[:filename]} has been updated."
+  session[:message] = "#{params[:filename]} has been updated."
   redirect "/"
 end
