@@ -1,10 +1,14 @@
-redcarpet
-  - add redcarpet to gemfile.
-  - require redcarpet in cms.rb.
-  - create a redcarpet instance.
+Requirements
 
-- add a markdown file to the data directory.
-- in the 'documents' route
-  - check if the file extention id .md .
-  - if yes, tranfer the contents to html format.
-  - the header 'Content-Type' should be "html".
+- When a user views the index page, they should see an “Edit” link next to each document name.
+- When a user clicks an edit link, they should be taken to an edit page for the appropriate document.
+- When a user views the edit page for a document, that document's content should appear within a textarea:
+
+- add links to "/current_document.txt/edit" in index template.
+- create a new get route "/:document/edit" that renders the edit template.
+  - the edit template should render the current document within a textarea element.
+  - the form should be submitted to post "/current_document.txt"
+- create a new post route "/:document"
+  - update the :document file.
+  - flash message success ":document was updated."
+  - redirect to "/"
