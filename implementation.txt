@@ -1,0 +1,10 @@
+redcarpet
+  - add redcarpet to gemfile.
+  - require redcarpet in cms.rb.
+  - create a redcarpet instance.
+
+- add a markdown file to the data directory.
+- in the 'documents' route
+  - check if the file extention id .md .
+  - if yes, tranfer the contents to html format.
+  - the header 'Content-Type' should be "html".
