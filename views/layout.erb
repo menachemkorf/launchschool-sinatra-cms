@@ -3,11 +3,12 @@
   <head>
     <title>CMS App</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/cms.css">
   </head>
   <body>
 
     <% if session[:message] %>
-      <div class="flash">
+      <div class="message">
         <p><%= session.delete(:message) %></p>
       </div>
     <% end %>

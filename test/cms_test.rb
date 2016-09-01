@@ -91,6 +91,43 @@ class CmsTest < Minitest::Test
     assert_includes last_response.body, "new content"
   end
 
+  def test_viewing_new_document_form
+    get "/new"
+
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, "<input"
+    assert_includes last_response.body, %q(<button type="submit")
+  end
+
+  def test_create_new_document
+    post "/", filename: "test.txt"
+
+    assert_equal 302, last_response.status
+    get last_response["Location"]
+    assert_includes last_response.body, "test.txt was created."
+  end
+
+  def test_create_new_document_without_filename
+    post "/", filename: ""
+
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, "That's not a valid file name."
+  end
+
+  def test_delete_document
+    create_document("test.txt")
+
+    get "/"
+    assert_includes last_response.body, "test.txt"
+    post "/test.txt/delete"
+    assert_equal 302, last_response.status
+    get last_response["Location"]
+    assert_includes last_response.body, "test.txt has been deleted."
+    get "/"
+    refute_includes last_response.body, "test.txt"
+
+  end
+
   def setup
     FileUtils.mkdir_p(data_path)
   end

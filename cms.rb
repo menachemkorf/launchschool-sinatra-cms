@@ -33,7 +33,7 @@ def load_file_content(path)
     headers["Content-Type"] = "text/plain"
     content
   when ".md"
-    render_md(content)
+    erb render_md(content)
   end
 end
 
@@ -43,6 +43,23 @@ get "/" do
     File.basename(path)
   end
   erb :index
+end
+
+get "/new" do
+  erb :new
+end
+
+post "/" do
+  filename = params[:filename].strip
+  if filename.end_with?(".txt", ".md")
+    File.new(File.join(data_path, filename), "w")
+    session[:message] = "#{filename} was created."
+    redirect "/"
+  else
+    session[:message] = "That's not a valid file name."
+    status 422
+    erb :new
+  end
 end
 
 get "/:filename" do
@@ -74,5 +91,14 @@ post "/:filename" do
   File.write(file_path, params[:content])
 
   session[:message] = "#{params[:filename]} has been updated."
+  redirect "/"
+end
+
+post "/:filename/delete" do
+  file_path = File.join(data_path, params[:filename])
+
+  File.delete file_path
+
+  session[:message] = "#{params[:filename]} has been deleted."
   redirect "/"
 end
