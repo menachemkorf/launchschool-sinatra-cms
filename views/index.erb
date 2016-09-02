@@ -11,3 +11,15 @@
 </ul>
 
 <a href="/new">New Document</a>
+
+<% if !@username %>
+  <form action="/users/signin" method="get">
+    <button type="submit">Sign In</button>
+  </form>
+<% else %>
+  <div>You are signed in as <%= @username %>.
+    <form class="inline" action="/users/signout" method="post">
+      <button type="submit">Sign Out</button>
+    </form>
+  </div>
+<% end %>

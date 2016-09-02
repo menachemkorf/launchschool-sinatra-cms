@@ -1,25 +1,36 @@
-Requirements:
+Requirements
 
-- When a user views the index page, they should see a link that says "New Document".
+When a signed-out user views the index page of the site, they should see a "Sign In" button.
 
-- When a user clicks the "New Document" link, they should be taken to a page with a text input labeled "New document name" and a submit button labeled "Create Document":
+When a user clicks the "Sign In" button, they should be taken to a new page with a sign in form. The form should contain a text input labeled "Username" and a password input labeled "Password". The form should also contain a submit button labeled "Sign In":
 
-- When a user enters a page name and clicks "Create Document", they should be redirected to the index page. The name they entered in the form should now appear in the file list. They should see a message that says "$FILENAME has been created.":
+When a user enters the username "admin" and password "secret" into the sign in form and clicks the "Sign In" button, they should be signed in and redirected to the index page. A message should display that says "Welcome!"
 
-- If a user attempts to create a new document without a name, the form should be redisplayed and a message should say "A name is required."
+When a user enters any other username and password into the sign in form and clicks the "Sign In" button, the sign in form should be redisplayed and an error message "Invalid Credentials" should be shown. The username they entered into the form should appear in the username input.
 
-Implementation:
+When a signed-in user views the index page, they should see a message at the bottom of the page that says "Signed in as $USERNAME.}, followed by a button labeled "Sign Out".
 
-- add link to 'new' route within the index page
-- create a route '/new', and within it:
-  - render a 'new' template, with a form with input text field
-- create a route that the form from preveios step posts to
-  - check if valid?
-    - create a new file with that name in the data folder
-    - add message to session that file 'file_name' was created
+When a signed-in user clicks this "Sign Out" button, they should be signed out of the application and redirected to the index page of the site. They should see a message that says "You have been signed out.".
+
+Implementation
+
+- add a form with a sign in button to the index template.
+  - the form should point to the 'users/signin' route, using the get method.
+- add a get 'users/signin' route.
+  - the route shoud render a signin template with input fields for username and password, and a submit button
+  - the form shoud post to 'users/signin' route.
+- add a post 'users/signin' route.
+  - if the credentials are correct:
+    - add the username to the session.
+    - add a success message to the session.
     - redirect to '/'
-  - if not valid
-    - add error message to session
-    - redirect to '/'
+  - if the credentials are not correct:
+    - add an error message to the session.
+    - render the signin yemplate.
+      - with the typed in username in the input for username.
+- the index template should have a signin/signout button depending if the user is signed in.
+
+
+
 
 
