@@ -5,19 +5,12 @@ require "sinatra/reloader" if development?
 require "tilt/erubis"
 require "redcarpet"
 require "yaml"
+require "bcrypt"
 require "pry" if development?
 
 configure do
   enable :sessions
   set :session_secret, 'secret'
-end
-
-def users
-  if ENV["RACK_ENV"] == "test"
-    YAML.load_file('test/users.yaml')
-  else
-    YAML.load_file('users.yaml')
-  end
 end
 
 def load_user_credentials
@@ -64,6 +57,16 @@ def require_signed_in_user
   end
 end
 
+def valid_credentials?(username, password)
+  credentials = load_user_credentials
+  if credentials.key? username
+    bcrypt_password = BCrypt::Password.new(credentials[username])
+    bcrypt_password == password
+  else
+    false
+  end
+end
+
 get "/" do
   @username = session[:username]
   pattern = File.join(data_path, "*")
@@ -78,11 +81,12 @@ get "/users/signin" do
 end
 
 post "/users/signin" do
-  # credentials = load_user_credentials
+  # users = load_user_credentials
   @username = params[:username]
   password = params[:password]
 
-  if users.key?(@username) && users[@username] == password
+  # if users.key?(@username) && users[@username] == BCrypt::Password.create(password)
+  if valid_credentials?(@username, password)
     session[:username] = @username
     session[:message] = "Welcome!"
     redirect "/"

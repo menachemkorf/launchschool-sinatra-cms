@@ -7,6 +7,7 @@ gem "sinatra-contrib"
 gem "erubis"
 gem "minitest"
 gem "redcarpet"
+gem "bcrypt"
 
 group :development do
   gem "pry"
