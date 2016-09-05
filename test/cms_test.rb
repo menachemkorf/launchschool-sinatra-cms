@@ -78,18 +78,21 @@ class CmsTest < Minitest::Test
     assert_includes last_response.body, "<h1>An h1 header</h1>"
   end
 
-  def test_edit_document
+  def test_edit_form
     create_document("changes.txt")
 
     get "/changes.txt/edit", {}, admin_session
 
     assert_equal 200, last_response.status
+    assert_includes last_response.body, %q(name="new_filename")
     assert_includes last_response.body, "<textarea"
     assert_includes last_response.body, %q(<button type="submit")
   end
 
   def test_update_document
-    post "/changes.txt", { content: "new content" }, admin_session
+    create_document "changes.txt"
+
+    post "/changes.txt", { content: "new content", new_filename: "changes.txt" }, admin_session
 
     assert_equal 302, last_response.status
     assert_equal "changes.txt has been updated.", session[:message]
@@ -97,6 +100,28 @@ class CmsTest < Minitest::Test
     get "/changes.txt"
     assert_equal 200, last_response.status
     assert_includes last_response.body, "new content"
+  end
+
+  def test_update_filename
+    create_document "old.txt"
+
+    post "/old.txt", { content: "", new_filename: "new.txt" }, admin_session
+
+    assert_equal 302, last_response.status
+    assert_equal "new.txt has been updated.", session[:message]
+
+    get "/new.txt"
+    assert_equal 200, last_response.status
+  end
+
+  def test_update_filename_invalid
+    create_document "old.txt"
+
+    post "/old.txt", { content: "", new_filename: "new" }, admin_session
+
+
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, "That's not a valid file name."
   end
 
   def test_update_document_signed_out

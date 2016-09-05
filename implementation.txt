@@ -1,36 +1,20 @@
 Requirements
+- allow to edit filenames
 
-When a signed-out user views the index page of the site, they should see a "Sign In" button.
+- make sure all file names are unique, if a file has the same name rename it 'filename_1.txt'
 
-When a user clicks the "Sign In" button, they should be taken to a new page with a sign in form. The form should contain a text input labeled "Username" and a password input labeled "Password". The form should also contain a submit button labeled "Sign In":
+- Add a "duplicate" button that creates a new document based on an old one.
 
-When a user enters the username "admin" and password "secret" into the sign in form and clicks the "Sign In" button, they should be signed in and redirected to the index page. A message should display that says "Welcome!"
+Implementaion:
 
-When a user enters any other username and password into the sign in form and clicks the "Sign In" button, the sign in form should be redisplayed and an error message "Invalid Credentials" should be shown. The username they entered into the form should appear in the username input.
-
-When a signed-in user views the index page, they should see a message at the bottom of the page that says "Signed in as $USERNAME.}, followed by a button labeled "Sign Out".
-
-When a signed-in user clicks this "Sign Out" button, they should be signed out of the application and redirected to the index page of the site. They should see a message that says "You have been signed out.".
-
-Implementation
-
-- add a form with a sign in button to the index template.
-  - the form should point to the 'users/signin' route, using the get method.
-- add a get 'users/signin' route.
-  - the route shoud render a signin template with input fields for username and password, and a submit button
-  - the form shoud post to 'users/signin' route.
-- add a post 'users/signin' route.
-  - if the credentials are correct:
-    - add the username to the session.
-    - add a success message to the session.
-    - redirect to '/'
-  - if the credentials are not correct:
-    - add an error message to the session.
-    - render the signin yemplate.
-      - with the typed in username in the input for username.
-- the index template should have a signin/signout button depending if the user is signed in.
+- the edit form should have an input element with name="new_filename"
+- if new_filename is not the same as the old one
+  - rename the filename and redirect
 
 
 
 
-
+- add form in index by each file listed with "duplicate" button,
+  - when submitted it posts to "/:filename/duplicate"
+  - copy the file with its contents and name it filename_1
+    - start at '1' and increment the number for any new copys

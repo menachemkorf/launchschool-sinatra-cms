@@ -67,6 +67,10 @@ def valid_credentials?(username, password)
   end
 end
 
+def valid_filename?(file)
+  file.end_with?(".txt", ".md")
+end
+
 get "/" do
   @username = session[:username]
   pattern = File.join(data_path, "*")
@@ -81,11 +85,9 @@ get "/users/signin" do
 end
 
 post "/users/signin" do
-  # users = load_user_credentials
   @username = params[:username]
   password = params[:password]
 
-  # if users.key?(@username) && users[@username] == BCrypt::Password.create(password)
   if valid_credentials?(@username, password)
     session[:username] = @username
     session[:message] = "Welcome!"
@@ -112,7 +114,7 @@ post "/" do
   require_signed_in_user
 
   filename = params[:filename].strip
-  if filename.end_with?(".txt", ".md")
+  if valid_filename?(filename)
     File.new(File.join(data_path, filename), "w")
     session[:message] = "#{filename} was created."
     redirect "/"
@@ -153,10 +155,19 @@ post "/:filename" do
 
   file_path = File.join(data_path, params[:filename])
 
-  File.write(file_path, params[:content])
-
-  session[:message] = "#{params[:filename]} has been updated."
-  redirect "/"
+  if valid_filename?(params[:new_filename])
+    File.rename(file_path, File.join(data_path, params[:new_filename]))
+    file_path = File.join(data_path, params[:new_filename])
+    File.write(file_path, params[:content])
+    session[:message] = "#{params[:new_filename]} has been updated."
+    redirect "/"
+  else
+    @filename = params[:filename]
+    @content = params[:content]
+    session[:message] = "That's not a valid file name."
+    status 422
+    erb :edit
+  end
 end
 
 post "/:filename/delete" do
