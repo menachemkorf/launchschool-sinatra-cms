@@ -7,6 +7,7 @@ require "redcarpet"
 require "yaml"
 require "bcrypt"
 require "pry" if development?
+require "fileutils"
 
 configure do
   enable :sessions
@@ -71,12 +72,20 @@ def valid_filename?(file)
   file.end_with?(".txt", ".md")
 end
 
-get "/" do
-  @username = session[:username]
+def unique_filename?(file)
+  !all_files.include?(file)
+end
+
+def all_files
   pattern = File.join(data_path, "*")
-  @files = Dir.glob(pattern).map do |path|
+  Dir.glob(pattern).map do |path|
     File.basename(path)
   end
+end
+
+get "/" do
+  @username = session[:username]
+  @files = all_files
   erb :index
 end
 
@@ -114,7 +123,7 @@ post "/" do
   require_signed_in_user
 
   filename = params[:filename].strip
-  if valid_filename?(filename)
+  if valid_filename?(filename) && unique_filename?(filename)
     File.new(File.join(data_path, filename), "w")
     session[:message] = "#{filename} was created."
     redirect "/"
@@ -155,7 +164,7 @@ post "/:filename" do
 
   file_path = File.join(data_path, params[:filename])
 
-  if valid_filename?(params[:new_filename])
+  if valid_filename?(params[:new_filename]) && (unique_filename?(params[:new_filename]) || params[:filename] == params[:new_filename])
     File.rename(file_path, File.join(data_path, params[:new_filename]))
     file_path = File.join(data_path, params[:new_filename])
     File.write(file_path, params[:content])
@@ -180,3 +189,19 @@ post "/:filename/delete" do
   session[:message] = "#{params[:filename]} has been deleted."
   redirect "/"
 end
+
+post "/:filename/copy" do
+  require_signed_in_user
+
+  src_path = File.join(data_path, params[:filename])
+  dest_path = File.join(data_path, "dup_#{params[:filename]}")
+
+  FileUtils.cp(src_path, dest_path)
+
+  session[:message] = "#{params[:filename]} has been duplicated."
+  redirect "/"
+end
+
+
+
+
